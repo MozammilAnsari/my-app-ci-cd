@@ -1,0 +1,27 @@
+version: 0.2
+
+env:
+  variables:
+    DOCKER_USERNAME: "modassir7488"
+    DOCKER_PASSWORD: "Ansari@123"
+
+phases:
+  install:
+    runtime-versions:
+      python: 3.11
+  pre_build:
+    commands:
+      - pip install -r requirements.txt
+      - echo "Hello World"
+  build:
+    commands:
+      - echo "Logging in to Docker Hub"
+      - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+      - echo "Building docker image"
+      - ls -al  # List files in the directory to ensure Dockerfile is present
+      - cat Dockerfile  # Display the contents of Dockerfile to ensure it's correctly read
+      - docker build -t "docker.io/modassir7488/my-app:latest" .
+      - docker push "docker.io/modassir7488/my-app:latest"
+  post_build:
+    commands:
+      - echo "Build is successful"

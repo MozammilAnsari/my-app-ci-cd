@@ -1,0 +1,33 @@
+version: 0.2
+
+env:
+  variables:
+    AWS_REGION: "us-east-1"  # Update with your desired region
+    ECR_REPOSITORY: "my-app"  # Update with your ECR repository name
+    REPOSITORY_URI: "381492249871.dkr.ecr.us-east-1.amazonaws.com/my-app"
+    IMAGE_TAG: "latest"
+
+phases:
+  install:
+    runtime-versions:
+      python: 3.11
+  pre_build:
+    commands:
+      - pip install -r requirements.txt
+      - echo "Hello World"
+      - echo "Logging in to Amazon ECR"
+      - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 381492249871.dkr.ecr.us-east-1.amazonaws.com
+  build:
+    commands:
+      - echo "Building docker image"
+      - docker build -t my-app .
+      - docker tag my-app:latest 381492249871.dkr.ecr.us-east-1.amazonaws.com/my-app:latest
+  post_build:
+    commands:
+      - echo "Pushing the docker image to Amazon ECR"
+      - docker push 381492249871.dkr.ecr.us-east-1.amazonaws.com/my-app:latest
+      - echo "Build and push is successful"
+      - echo Writing image definitions file...
+      - printf '[{"name":"hello-world","381492249871.dkr.ecr.us-east-1.amazonaws.com/my-app:latest":"%s"}]' $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
+artifacts:
+    files: imagedefinitions.json
