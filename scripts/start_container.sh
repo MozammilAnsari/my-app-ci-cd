@@ -3,11 +3,11 @@ set -e
 
 echo "Pulling image from docker"
 
-docker pull modassir7488/my-app:tagname
+sudo docker pull modassir7488/my-app:latest
 
 
 # Run the Docker image as a container
 echo "Run the docker image"
 
-docker run -d -p 5000:5000 modassir7488/my-app:tagname
+sudo docker run -d -p 5000:5000 modassir7488/my-app:latest
 
